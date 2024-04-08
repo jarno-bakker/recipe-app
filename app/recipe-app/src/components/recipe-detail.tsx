@@ -2,7 +2,6 @@ import { Heading, Box, Flex, Text, Button, Image } from "@chakra-ui/react";
 import "./components.css";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
-import { useState } from "react";
 
 function charactersAfterLastSlash(str: string) {
   const lastIndex = str.lastIndexOf("/");

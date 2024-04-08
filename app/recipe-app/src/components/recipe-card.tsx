@@ -1,4 +1,4 @@
-import { Card, CardBody, Stack, Heading, Image, Box } from "@chakra-ui/react";
+import { Card, CardBody, Stack, Heading, Image } from "@chakra-ui/react";
 import "./components.css";
 import { Link } from "react-router-dom";
 
