@@ -5,7 +5,7 @@ import App from "./App.tsx";
 import "./index.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import RecipeDetail from "./components/recipe-detail.tsx";
-import NewRecept from "./components/recipe-card.tsx";
+import NewRecept from "./components/new-recept.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

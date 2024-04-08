@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Recipe = require("../models/Recipe");
+const isAuthorized = require("../middleware/authorization");
 
 // Get all recipes
 router.get("/", async (req, res) => {
@@ -18,12 +19,13 @@ router.get("/:id", getRecipe, (req, res) => {
 });
 
 // Create a new recipe
-router.post("/", async (req, res) => {
-  console.log(req.body);
+router.post("/", isAuthorized, async (req, res) => {
   const recipe = new Recipe({
     title: req.body.title,
     ingredients: req.body.ingredients,
     steps: req.body.steps,
+    image_ingredients: req.body.image_ingredients,
+    image_recipe: req.body.image_recipe,
   });
 
   try {
@@ -35,7 +37,7 @@ router.post("/", async (req, res) => {
 });
 
 // Update a recipe
-router.put("/:id", getRecipe, async (req, res) => {
+router.put("/:id", isAuthorized, getRecipe, async (req, res) => {
   if (req.body.title != null) {
     res.recipe.title = req.body.title;
   }
@@ -48,6 +50,14 @@ router.put("/:id", getRecipe, async (req, res) => {
     res.recipe.steps = req.body.steps;
   }
 
+  if (req.body.image_ingredients != null) {
+    res.recipe.image_ingredients = req.body.image_ingredients;
+  }
+
+  if (req.body.image_recipe != null) {
+    res.recipe.image_recipe = req.body.image_recipe;
+  }
+
   try {
     const updatedRecipe = await res.recipe.save();
     res.json(updatedRecipe);
@@ -57,7 +67,7 @@ router.put("/:id", getRecipe, async (req, res) => {
 });
 
 // Delete a recipe
-router.delete("/:id", getRecipe, async (req, res) => {
+router.delete("/:id", isAuthorized, getRecipe, async (req, res) => {
   try {
     await res.recipe.remove();
     res.json({ message: "Recipe deleted" });
@@ -69,7 +79,7 @@ router.delete("/:id", getRecipe, async (req, res) => {
 async function getRecipe(req, res, next) {
   let recipe;
   try {
-    recipe = await Recipe.findById(req.params.id);
+    recipe = await Recipe.findById(req.params._id);
     if (recipe == null) {
       return res.status(404).json({ message: "Cannot find recipe" });
     }
