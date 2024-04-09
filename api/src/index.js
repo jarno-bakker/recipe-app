@@ -9,7 +9,7 @@ const bodyParser = require("body-parser");
 const app = express();
 app.use(
   cors({
-    origin: "recepten.jarno-bakker.nl",
+    origin: "https://recepten.jarno-bakker.nl",
   })
 );
 app.use(bodyParser.json({ limit: "50mb", extended: true }));
