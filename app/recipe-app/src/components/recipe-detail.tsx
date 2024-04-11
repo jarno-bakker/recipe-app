@@ -69,7 +69,11 @@ function RecipeDetail() {
         navigate("/");
       })
       .catch((error: any) => {
-        setError(error.message);
+        if (error.response.status == 401) {
+          setError(error.response.data);
+        } else {
+          setError(error.message);
+        }
       });
   };
 
@@ -140,6 +144,7 @@ function RecipeDetail() {
               <FormLabel>Wachtwoord</FormLabel>
               <Input
                 placeholder="Wachtwoord"
+                type="password"
                 onChange={(event) => setPassword(event.target.value)}
               />
             </FormControl>

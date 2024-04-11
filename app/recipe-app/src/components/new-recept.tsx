@@ -7,6 +7,7 @@ import {
   FormLabel,
   Button,
   Textarea,
+  Spinner,
 } from "@chakra-ui/react";
 import "./components.css";
 import { useState } from "react";
@@ -18,6 +19,7 @@ function NewRecept() {
   const navigate = useNavigate();
 
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [ingredients, setIngredients] = useState("");
   const [steps, setSteps] = useState("");
@@ -53,6 +55,7 @@ function NewRecept() {
   }
 
   const save = () => {
+    setIsLoading(true);
     let recipe: Recipe = {
       title: title,
       ingredients: ingredients,
@@ -68,8 +71,13 @@ function NewRecept() {
         navigate("/");
       })
       .catch((error: any) => {
-        setError(error.message);
+        if (error.response.status == 401) {
+          setError(error.response.data);
+        } else {
+          setError(error.message);
+        }
       });
+    setIsLoading(false);
   };
 
   return (
@@ -85,7 +93,6 @@ function NewRecept() {
             onChange={(event) => setTitle(event.target.value)}
           />
         </FormControl>
-
         <FormControl isRequired mt={3}>
           <FormLabel>Ingrediënten</FormLabel>
           <Textarea
@@ -93,7 +100,6 @@ function NewRecept() {
             onChange={(event) => setIngredients(event.target.value)}
           />
         </FormControl>
-
         <FormControl isRequired mt={3}>
           <FormLabel>Stappen</FormLabel>
           <Textarea
@@ -101,7 +107,6 @@ function NewRecept() {
             onChange={(event) => setSteps(event.target.value)}
           />
         </FormControl>
-
         <FormControl isRequired mt={3}>
           <FormLabel>Foto van ingrediënten</FormLabel>
           <Input
@@ -110,12 +115,10 @@ function NewRecept() {
             onChange={addImageIngredients}
           ></Input>
         </FormControl>
-
         <FormControl isRequired mt={3}>
           <FormLabel>Foto van recept</FormLabel>
           <Input accept="image/*" type="file" onChange={addImageRecipe}></Input>
         </FormControl>
-
         <FormControl isRequired mt={3}>
           <FormLabel>Wachtwoord</FormLabel>
           <Input
@@ -124,17 +127,21 @@ function NewRecept() {
             onChange={(event) => setPassword(event.target.value)}
           />
         </FormControl>
-
         <Link to={"/"}>
           <Button float={"left"} mt={6}>
             Ga terug
           </Button>
         </Link>
-
-        <Button colorScheme="green" float={"right"} mt={6} onClick={save}>
+        <Button
+          colorScheme="green"
+          float={"right"}
+          mt={6}
+          onClick={save}
+          disabled={isLoading}
+        >
           Opslaan
+          {isLoading ? <Spinner ml={2} size={"sm"} /> : null}
         </Button>
-
         {error !== "" ? <Text color={"red"}>{error}</Text> : null}
       </Box>
     </>
