@@ -69,6 +69,7 @@ function NewRecept() {
       .post(`${import.meta.env.VITE_BASE_URL}/recipes`, recipe)
       .then(() => {
         navigate("/");
+        setIsLoading(false);
       })
       .catch((error: any) => {
         if (error.response.status == 401) {
@@ -76,8 +77,8 @@ function NewRecept() {
         } else {
           setError(error.message);
         }
+        setIsLoading(false);
       });
-    setIsLoading(false);
   };
 
   return (
