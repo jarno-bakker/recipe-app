@@ -1,7 +1,35 @@
 const express = require("express");
 const router = express.Router();
+const multer = require("multer");
+const { GridFsStorage } = require("multer-gridfs-storage");
+const path = require("path");
+const crypto = require("crypto");
+
 const Recipe = require("../models/recipe");
 const isAuthorized = require("../middleware/authorization");
+
+const mongoURI = process.env.DATABASE_URL;
+
+//Create storage engine
+const storage = new GridFsStorage({
+  url: mongoURI,
+  file: (req, file) => {
+    return new Promise((resolve, reject) => {
+      crypto.randomBytes(16, (err, buf) => {
+        if (err) {
+          return reject(err);
+        }
+        const filename = buf.toString("hex") + path.extname(file.originalname);
+        const fileInfo = {
+          filename: filename,
+          bucketName: "uploads",
+        };
+        resolve(fileInfo);
+      });
+    });
+  },
+});
+const upload = multer({ storage });
 
 // Get all recipes
 router.get("/", async (req, res) => {
@@ -19,30 +47,35 @@ router.get("/:id", getRecipe, (req, res) => {
 });
 
 // Create a new recipe
-router.post("/", isAuthorized, async (req, res) => {
-  const { image_ingredients, image_recipe } = req.body;
+router.post(
+  "/",
+  upload.fields([
+    { name: "image_ingredients", maxCount: 1 },
+    { name: "image_recipe", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    if (req.body.password !== process.env.PASSWORD) {
+      res.status(401).send("Wachtwoord verkeerd!");
+    }
 
-  const recipe = new Recipe({
-    title: req.body.title,
-    ingredients: req.body.ingredients,
-    steps: req.body.steps,
-    image_ingredients: {
-      name: "Image.jpg",
-      data: Buffer.from(image_ingredients, "base64"),
-    },
-    image_recipe: {
-      name: "Image.jpg",
-      data: Buffer.from(image_recipe, "base64"),
-    },
-  });
+    const { image_ingredients, image_recipe } = req.files;
 
-  try {
-    const newRecipe = await recipe.save();
-    res.status(201).json(newRecipe);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+    const recipe = new Recipe({
+      title: req.body.title,
+      ingredients: req.body.ingredients,
+      steps: req.body.steps,
+      image_ingredients: image_ingredients[0].filename,
+      image_recipe: image_recipe[0].filename,
+    });
+
+    try {
+      const newRecipe = await recipe.save();
+      res.status(201).json(newRecipe);
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
   }
-});
+);
 
 // Update a recipe
 router.put("/:id", isAuthorized, getRecipe, async (req, res) => {

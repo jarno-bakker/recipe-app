@@ -1,40 +1,43 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const Grid = require("gridfs-stream");
+
+const methodOverride = require("method-override");
+const bodyParser = require("body-parser");
 const cors = require("cors");
 require("dotenv").config();
-const DBString = process.env.DATABASE_URL;
-const bodyParser = require("body-parser");
 
-// Set up the express app
 const app = express();
+
+//Middleware
+app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(methodOverride("_method"));
 app.use(
   cors({
     origin: ["https://recepten.jarno-bakker.nl", "http://localhost:5173"],
   })
 );
-app.use(bodyParser.json({ limit: "50mb", extended: true }));
-app.use(
-  bodyParser.urlencoded({
-    limit: "50mb",
-    extended: true,
-    parameterLimit: 50000,
-  })
-);
-app.use(bodyParser.text({ limit: "200mb" }));
 
-//Allows us to accept the data in JSON format
-app.use(express.json());
+const mongoURI = process.env.DATABASE_URL;
+const connection = mongoose.createConnection(mongoURI);
 
-//DATABASE Connection
-mongoose.connect(DBString);
-const database = mongoose.connection;
-
-database.on("error", (error) => {
-  console.log(error);
+let gfs;
+connection.once("open", () => {
+  gfs = Grid(connection.db, mongoose.mongo);
+  gfs.collection("uploads");
 });
 
-database.once("connected", () => {
-  console.log("Database Connected");
+app.get("/files/:filename", async (req, res) => {
+  gfs.files.findOne({ filename: req.params.filename }, (err, res) => {
+    if (!file || file.listen === 0) {
+      return res.status(404).json({
+        err: "No file exists",
+      });
+    }
+    return res.json(file);
+  });
 });
 
 const router = require("./routes/recipes");
