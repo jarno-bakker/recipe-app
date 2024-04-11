@@ -24,8 +24,11 @@ router.get("/:id", getRecipe, async (req, res) => {
 router.post("/", isAuthorized, async (req, res) => {
   try {
     // Upload de afbeeldingen naar GridFS
+    console.log(req.body.image_ingredients);
     const ingredientsImageId = await uploadToGridFS(req.body.image_ingredients);
     const recipeImageId = await uploadToGridFS(req.body.image_recipe);
+
+    console.log("hopla", ingredientsImageId);
 
     // Maak een nieuw recept aan met de afbeelding ObjectIDs
     const recipe = new Recipe({

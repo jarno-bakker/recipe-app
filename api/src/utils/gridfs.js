@@ -23,6 +23,7 @@ async function uploadToGridFS(filePath) {
 
   return new Promise((resolve, reject) => {
     uploadStream.on("close", (file) => {
+      console.log("nieuwe id", file._id);
       resolve(file._id); // Retourneer de ObjectID van het geüploade bestand
     });
 
