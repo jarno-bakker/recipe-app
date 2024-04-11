@@ -30,22 +30,6 @@ function NewRecept() {
     ""
   );
 
-  const addTitle = (e: any) => {
-    setTitle(e.target.value);
-  };
-
-  const addPassword = (e: any) => {
-    setPassword(e.target.value);
-  };
-
-  const addIngredients = (e: any) => {
-    setIngredients(e.target.value);
-  };
-
-  const addSteps = (e: any) => {
-    setSteps(e.target.value);
-  };
-
   function addImageIngredients(e: any) {
     var reader = new FileReader();
     reader.readAsDataURL(e.target.files[0]);
@@ -97,17 +81,26 @@ function NewRecept() {
         </Heading>
         <FormControl isRequired>
           <FormLabel>Recept naam</FormLabel>
-          <Input placeholder="Titel" onChange={addTitle} />
+          <Input
+            placeholder="Titel"
+            onChange={(event) => setTitle(event.target.value)}
+          />
         </FormControl>
 
         <FormControl isRequired mt={3}>
           <FormLabel>Ingrediënten</FormLabel>
-          <Textarea placeholder="Ingrediënten" onChange={addIngredients} />
+          <Textarea
+            placeholder="Ingrediënten"
+            onChange={(event) => setIngredients(event.target.value)}
+          />
         </FormControl>
 
         <FormControl isRequired mt={3}>
           <FormLabel>Stappen</FormLabel>
-          <Textarea placeholder="Stappen" onChange={addSteps} />
+          <Textarea
+            placeholder="Stappen"
+            onChange={(event) => setSteps(event.target.value)}
+          />
         </FormControl>
 
         <FormControl isRequired mt={3}>
@@ -129,7 +122,7 @@ function NewRecept() {
           <Input
             placeholder="Wachtwoord"
             type="password"
-            onChange={addPassword}
+            onChange={(event) => setPassword(event.target.value)}
           />
         </FormControl>
 
