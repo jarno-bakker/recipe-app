@@ -67,13 +67,18 @@ router.put("/:id", isAuthorized, getRecipe, async (req, res) => {
 });
 
 // Delete a recipe
-router.delete("/:id", isAuthorized, getRecipe, async (req, res) => {
-  try {
-    await res.recipe.remove();
-    res.json({ message: "Recipe deleted" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+router.delete("/:id", isAuthorized, async (req, res) => {
+  Recipe.deleteOne({ _id: req.params.id })
+    .then(() => {
+      res.status(200).json({
+        message: "Deleted!",
+      });
+    })
+    .catch((error) => {
+      res.status(400).json({
+        error: error,
+      });
+    });
 });
 
 async function getRecipe(req, res, next) {
