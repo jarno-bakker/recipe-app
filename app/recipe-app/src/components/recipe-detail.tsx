@@ -1,7 +1,27 @@
-import { Heading, Box, Flex, Text, Button, Image } from "@chakra-ui/react";
+import {
+  Heading,
+  Box,
+  Flex,
+  Text,
+  Button,
+  Image,
+  useDisclosure,
+  Modal,
+  FormControl,
+  FormLabel,
+  Input,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+} from "@chakra-ui/react";
 import "./components.css";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useState } from "react";
+import { RemoveRecipeModal } from "./remove-recipe.modal";
 
 function charactersAfterLastSlash(str: string) {
   const lastIndex = str.lastIndexOf("/");
@@ -30,8 +50,29 @@ function getData(location: any) {
 }
 
 function RecipeDetail() {
+  const [error, setError] = useState("");
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
+
   const location = useLocation();
   const { recipe } = getData(location);
+
+  const removeRecipe = (id: string) => {
+    axios
+      .delete(
+        `${import.meta.env.VITE_BASE_URL}/recipes/${id}?password=${password}`
+      )
+      .then((response) => {
+        console.log(response);
+        navigate("/");
+      })
+      .catch((error: any) => {
+        setError(error.message);
+      });
+  };
+
   return (
     <>
       <Image
@@ -78,6 +119,9 @@ function RecipeDetail() {
         </Box>
 
         <Box>
+          <Button mt={12} colorScheme="red" float={"left"} onClick={onOpen}>
+            Verwijder
+          </Button>
           <Link to={"/"}>
             <Button mt={12} float={"right"}>
               Ga terug
@@ -85,6 +129,35 @@ function RecipeDetail() {
           </Link>
         </Box>
       </Box>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Zeker dat je wilt verwijderen?</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <FormControl isRequired>
+              <FormLabel>Wachtwoord</FormLabel>
+              <Input
+                placeholder="Wachtwoord"
+                onChange={(event) => setPassword(event.target.value)}
+              />
+            </FormControl>
+            <Text color={"red"}>{error}</Text>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              colorScheme="red"
+              mr={3}
+              onClick={() => removeRecipe(recipe._id)}
+            >
+              Verwijder
+            </Button>
+            <Button onClick={onClose}>Nee, behouden</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 }

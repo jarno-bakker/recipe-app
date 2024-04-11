@@ -65,8 +65,7 @@ function NewRecept() {
     axios
       .post(`${import.meta.env.VITE_BASE_URL}/recipes`, recipe)
       .then((response) => {
-        console.log(response);
-        navigate("/" + response.data._id);
+        navigate("/");
       })
       .catch((error: any) => {
         setError(error.message);
