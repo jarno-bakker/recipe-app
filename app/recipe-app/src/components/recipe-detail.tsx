@@ -65,7 +65,6 @@ function RecipeDetail() {
         `${import.meta.env.VITE_BASE_URL}/recipes/${id}?password=${password}`
       )
       .then((response) => {
-        console.log(response);
         navigate("/");
       })
       .catch((error: any) => {
