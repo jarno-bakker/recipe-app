@@ -40,6 +40,14 @@ database.once("connected", () => {
 const router = require("./routes/recipes");
 app.use("/recipes", router);
 
+const wakeupRouter = express.Router();
+app.use(
+  "/wakeup",
+  wakeupRouter.get("/", async (req, res) => {
+    res.json("Hi there!");
+  })
+);
+
 //Server Started
 app.listen(3000, () => {
   console.log(`Server Started at ${3000}`);
