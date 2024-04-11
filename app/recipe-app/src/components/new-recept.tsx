@@ -23,12 +23,8 @@ function NewRecept() {
   const [steps, setSteps] = useState("");
   const [password, setPassword] = useState("");
 
-  const [imageIngredents, setImageIngredents] = useState<
-    string | ArrayBuffer | null
-  >("");
-  const [imageRecipe, setImageRecipe] = useState<string | ArrayBuffer | null>(
-    ""
-  );
+  const [imageIngredents, setImageIngredents] = useState(null);
+  const [imageRecipe, setImageRecipe] = useState(null);
 
   const addTitle = (e: any) => {
     setTitle(e.target.value);
@@ -47,25 +43,25 @@ function NewRecept() {
   };
 
   function addImageIngredients(e: any) {
-    var reader = new FileReader();
-    reader.readAsDataURL(e.target.files[0]);
-    reader.onload = () => {
-      setImageIngredents(reader.result);
-    };
-    reader.onerror = (error) => {
-      setError(error.toString());
-    };
+    // var reader = new FileReader();
+    // reader.readAsDataURL(e.target.files[0]);
+    // reader.onload = () => {
+    //   setImageIngredents(reader.result);
+    // };
+    // reader.onerror = (error) => {
+    //   setError(error.toString());
+    // };
   }
 
   function addImageRecipe(e: any) {
-    var reader = new FileReader();
-    reader.readAsDataURL(e.target.files[0]);
-    reader.onload = () => {
-      setImageRecipe(reader.result);
-    };
-    reader.onerror = (error) => {
-      setError(error.toString());
-    };
+    // var reader = new FileReader();
+    // reader.readAsDataURL(e.target.files[0]);
+    // reader.onload = () => {
+    //   setImageRecipe(reader.result);
+    // };
+    // reader.onerror = (error) => {
+    //   setError(error.toString());
+    // };
   }
 
   const save = () => {
@@ -73,8 +69,8 @@ function NewRecept() {
       title: title,
       ingredients: ingredients,
       steps: steps,
-      image_ingredients_id: imageIngredents,
-      image_recipe_id: imageRecipe,
+      image_ingredients: imageIngredents!,
+      image_recipe: imageRecipe!,
       password: password,
     };
 
@@ -115,13 +111,17 @@ function NewRecept() {
           <Input
             accept="image/*"
             type="file"
-            onChange={addImageIngredients}
+            onChange={() => setImageIngredents}
           ></Input>
         </FormControl>
 
         <FormControl isRequired mt={3}>
           <FormLabel>Foto van recept</FormLabel>
-          <Input accept="image/*" type="file" onChange={addImageRecipe}></Input>
+          <Input
+            accept="image/*"
+            type="file"
+            onChange={() => setImageRecipe}
+          ></Input>
         </FormControl>
 
         <FormControl isRequired mt={3}>
