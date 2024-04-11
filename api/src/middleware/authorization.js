@@ -8,6 +8,6 @@ module.exports = function isAuthorized(req, res, next) {
     next();
   } else {
     // return unauthorized
-    res.status(401).send("Unauthorized");
+    res.status(401).send("Wachtwoord verkeerd!");
   }
 };
