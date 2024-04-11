@@ -21,7 +21,6 @@ import "./components.css";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useState } from "react";
-import { RemoveRecipeModal } from "./remove-recipe.modal";
 
 function charactersAfterLastSlash(str: string) {
   const lastIndex = str.lastIndexOf("/");
@@ -64,7 +63,7 @@ function RecipeDetail() {
       .delete(
         `${import.meta.env.VITE_BASE_URL}/recipes/${id}?password=${password}`
       )
-      .then((response) => {
+      .then(() => {
         navigate("/");
       })
       .catch((error: any) => {
