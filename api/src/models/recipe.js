@@ -6,8 +6,14 @@ const Recipe = mongoose.model(
     title: { type: String, required: true },
     ingredients: { type: String, required: true },
     steps: { type: String, required: true },
-    image_ingredients: { type: String, required: true },
-    image_recipe: { type: String, required: true },
+    image_ingredients: {
+      name: { type: String, required: true },
+      data: { type: Buffer, required: true },
+    },
+    image_recipe: {
+      name: { type: String, required: true },
+      data: { type: Buffer, required: true },
+    },
   })
 );
 

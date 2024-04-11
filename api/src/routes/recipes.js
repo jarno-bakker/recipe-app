@@ -20,12 +20,20 @@ router.get("/:id", getRecipe, (req, res) => {
 
 // Create a new recipe
 router.post("/", isAuthorized, async (req, res) => {
+  const { image_ingredients, image_recipe } = req.body;
+
   const recipe = new Recipe({
     title: req.body.title,
     ingredients: req.body.ingredients,
     steps: req.body.steps,
-    image_ingredients: req.body.image_ingredients,
-    image_recipe: req.body.image_recipe,
+    image_ingredients: {
+      name: "Image.jpg",
+      data: Buffer.from(image_ingredients, "base64"),
+    },
+    image_recipe: {
+      name: "Image.jpg",
+      data: Buffer.from(image_recipe, "base64"),
+    },
   });
 
   try {
