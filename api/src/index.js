@@ -9,7 +9,7 @@ const bodyParser = require("body-parser");
 const app = express();
 app.use(
   cors({
-    origin: "https://recepten.jarno-bakker.nl",
+    origin: "http://127.0.0.1:5173",
   })
 );
 app.use(bodyParser.json({ limit: "50mb", extended: true }));
@@ -39,6 +39,8 @@ database.once("connected", () => {
 
 const router = require("./routes/recipes");
 app.use("/recipes", router);
+const routerImages = require("./routes/images");
+app.use("/images", routerImages);
 
 //Server Started
 app.listen(3000, () => {

@@ -1,9 +1,7 @@
 export interface Recipe {
-  id?: string;
   title: string;
   ingredients: string;
   steps: string;
-  image_ingredients: string | ArrayBuffer | null;
-  image_recipe: string | ArrayBuffer | null;
-  password?: string;
+  image_ingredients_id: string;
+  image_recipe_id: string;
 }

@@ -73,8 +73,8 @@ function NewRecept() {
       title: title,
       ingredients: ingredients,
       steps: steps,
-      image_ingredients: imageIngredents,
-      image_recipe: imageRecipe,
+      image_ingredients_id: imageIngredents,
+      image_recipe_id: imageRecipe,
       password: password,
     };
 

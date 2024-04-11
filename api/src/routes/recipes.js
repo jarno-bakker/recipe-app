@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const Recipe = require("../models/recipe");
+const Image = require("../models/image");
 const isAuthorized = require("../middleware/authorization");
+const { uploadToGridFS } = require("../utils/gridfs");
 
 // Get all recipes
 router.get("/", async (req, res) => {
@@ -14,21 +16,26 @@ router.get("/", async (req, res) => {
 });
 
 // Get a single recipe
-router.get("/:id", getRecipe, (req, res) => {
+router.get("/:id", getRecipe, async (req, res) => {
   res.json(res.recipe);
 });
 
 // Create a new recipe
 router.post("/", isAuthorized, async (req, res) => {
-  const recipe = new Recipe({
-    title: req.body.title,
-    ingredients: req.body.ingredients,
-    steps: req.body.steps,
-    image_ingredients: req.body.image_ingredients,
-    image_recipe: req.body.image_recipe,
-  });
-
   try {
+    // Upload de afbeeldingen naar GridFS
+    const ingredientsImageId = await uploadToGridFS(req.body.image_ingredients);
+    const recipeImageId = await uploadToGridFS(req.body.image_recipe);
+
+    // Maak een nieuw recept aan met de afbeelding ObjectIDs
+    const recipe = new Recipe({
+      title: req.body.title,
+      ingredients: req.body.ingredients,
+      steps: req.body.steps,
+      image_ingredients_id: ingredientsImageId,
+      image_recipe_id: recipeImageId,
+    });
+
     const newRecipe = await recipe.save();
     res.status(201).json(newRecipe);
   } catch (err) {
@@ -50,15 +57,16 @@ router.put("/:id", isAuthorized, getRecipe, async (req, res) => {
     res.recipe.steps = req.body.steps;
   }
 
-  if (req.body.image_ingredients != null) {
-    res.recipe.image_ingredients = req.body.image_ingredients;
-  }
-
-  if (req.body.image_recipe != null) {
-    res.recipe.image_recipe = req.body.image_recipe;
-  }
-
   try {
+    // Als er een nieuwe afbeelding is geüpload, upload deze dan naar GridFS en update de ObjectID
+    if (req.body.image_ingredients) {
+      res.recipe.image_ingredients_id = await uploadToGridFS(req.body.image_ingredients);
+    }
+
+    if (req.body.image_recipe) {
+      res.recipe.image_recipe_id = await uploadToGridFS(req.body.image_recipe);
+    }
+
     const updatedRecipe = await res.recipe.save();
     res.json(updatedRecipe);
   } catch (err) {
@@ -69,6 +77,10 @@ router.put("/:id", isAuthorized, getRecipe, async (req, res) => {
 // Delete a recipe
 router.delete("/:id", isAuthorized, getRecipe, async (req, res) => {
   try {
+    // Verwijder de bijbehorende afbeeldingen uit GridFS
+    await Image.findByIdAndDelete(res.recipe.image_ingredients_id);
+    await Image.findByIdAndDelete(res.recipe.image_recipe_id);
+
     await res.recipe.remove();
     res.json({ message: "Recipe deleted" });
   } catch (err) {
@@ -79,7 +91,7 @@ router.delete("/:id", isAuthorized, getRecipe, async (req, res) => {
 async function getRecipe(req, res, next) {
   let recipe;
   try {
-    recipe = await Recipe.findById(req.params._id);
+    recipe = await Recipe.findById(req.params.id);
     if (recipe == null) {
       return res.status(404).json({ message: "Cannot find recipe" });
     }
