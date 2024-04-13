@@ -22,8 +22,8 @@ router.get("/:id", getRecipe, (req, res) => {
 router.post("/", isAuthorized, async (req, res) => {
   const recipe = new Recipe({
     title: req.body.title,
-    ingredients: req.body.ingredients,
-    steps: req.body.steps,
+    ingredients: req.body.ingredients.replace("*", "・"),
+    steps: req.body.steps.replace("*", "・"),
     image_ingredients: req.body.image_ingredients,
     image_recipe: req.body.image_recipe,
   });
