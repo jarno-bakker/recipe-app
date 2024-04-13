@@ -29,6 +29,18 @@ connection.once("open", () => {
   gfs.collection("uploads");
 });
 
+const getImageByFileName = async (fileName) => {
+  console.log("go");
+  const file = await gfs.files.findOne({ filename: fileName });
+
+  if (!file || file.listen === 0) {
+    return res.status(404).json({
+      err: "No file exists",
+    });
+  }
+  return file;
+};
+
 app.get("/files/:filename", async (req, res) => {
   gfs.files.findOne({ filename: req.params.filename }, (err, res) => {
     if (!file || file.listen === 0) {
@@ -55,3 +67,5 @@ app.use(
 app.listen(3000, () => {
   console.log(`Server Started at ${3000}`);
 });
+
+module.exports = { getImageByFileName };
