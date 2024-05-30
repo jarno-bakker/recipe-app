@@ -2,6 +2,15 @@ const express = require("express");
 const router = express.Router();
 const Recipe = require("../models/recipe");
 const isAuthorized = require("../middleware/authorization");
+const multer = require("multer");
+const { CloudflareStorage } = require("multer-cloudflare-storage");
+
+let upload = multer({
+  storage: new CloudflareStorage(
+    process.env.CLOUDFLARE_ACCOUNT_ID,
+    process.env.CLOUDFLARE_API_KEY
+  ),
+});
 
 // Get all recipes
 router.get("/", async (req, res) => {
@@ -19,22 +28,35 @@ router.get("/:id", getRecipe, (req, res) => {
 });
 
 // Create a new recipe
-router.post("/", isAuthorized, async (req, res) => {
-  const recipe = new Recipe({
-    title: req.body.title,
-    ingredients: req.body.ingredients.replace("*", "・"),
-    steps: req.body.steps.replace("*", "・"),
-    image_ingredients: req.body.image_ingredients,
-    image_recipe: req.body.image_recipe,
-  });
+router.post(
+  "/",
+  upload.fields([
+    { name: "image_ingredients", maxCount: 1 },
+    { name: "image_recipe", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    if (req.body.password !== process.env.PASSWORD) {
+      res.status(401).send("Wachtwoord verkeerd!");
+    }
 
-  try {
-    const newRecipe = await recipe.save();
-    res.status(201).json(newRecipe);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+    const { image_ingredients, image_recipe } = req.files;
+
+    const recipe = new Recipe({
+      title: req.body.title,
+      ingredients: req.body.ingredients,
+      steps: req.body.steps,
+      image_ingredients: image_ingredients[0].path,
+      image_recipe: image_recipe[0].path,
+    });
+
+    try {
+      const newRecipe = await recipe.save();
+      res.status(201).json(newRecipe);
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
   }
-});
+);
 
 // Update a recipe
 router.put("/:id", isAuthorized, getRecipe, async (req, res) => {
