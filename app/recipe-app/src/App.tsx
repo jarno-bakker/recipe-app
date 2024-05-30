@@ -51,7 +51,7 @@ function App() {
           </Box>
           <Box>
             <Link to={"nieuw-recept"}>
-              <Button>Nieuw recept</Button>
+              <Button colorScheme="green">Nieuw recept</Button>
             </Link>
           </Box>
         </Flex>

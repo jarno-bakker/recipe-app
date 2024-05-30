@@ -25,48 +25,44 @@ function NewRecept() {
   const [steps, setSteps] = useState("");
   const [password, setPassword] = useState("");
 
-  const [imageIngredents, setImageIngredents] = useState<
-    string | ArrayBuffer | null
-  >("");
-  const [imageRecipe, setImageRecipe] = useState<string | ArrayBuffer | null>(
-    ""
-  );
+  const [imageIngredents, setImageIngredents] = useState<File>();
+  const [imageRecipe, setImageRecipe] = useState<File>();
 
-  function addImageIngredients(e: any) {
-    var reader = new FileReader();
-    reader.readAsDataURL(e.target.files[0]);
-    reader.onload = () => {
-      setImageIngredents(reader.result);
-    };
-    reader.onerror = (error) => {
-      setError(error.toString());
-    };
+  function addImageIngredients(event: React.FormEvent) {
+    const files = (event.target as HTMLInputElement).files;
+
+    if (files && files.length > 0) {
+      setImageIngredents(files[0]);
+    }
   }
 
-  function addImageRecipe(e: any) {
-    var reader = new FileReader();
-    reader.readAsDataURL(e.target.files[0]);
-    reader.onload = () => {
-      setImageRecipe(reader.result);
-    };
-    reader.onerror = (error) => {
-      setError(error.toString());
-    };
+  function addImageRecipe(event: React.FormEvent) {
+    const files = (event.target as HTMLInputElement).files;
+
+    if (files && files.length > 0) {
+      setImageRecipe(files[0]);
+    }
   }
 
   const save = () => {
+    setError("");
     setIsLoading(true);
-    let recipe: Recipe = {
-      title: title,
-      ingredients: ingredients,
-      steps: steps,
-      image_ingredients: imageIngredents,
-      image_recipe: imageRecipe,
-      password: password,
-    };
+    if (password != import.meta.env.VITE_PASSWORD) {
+      setError("Wachtwoord verkeerd!");
+      setIsLoading(false);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("ingredients", ingredients);
+    formData.append("steps", steps);
+    formData.append("image_ingredients", imageIngredents as File);
+    formData.append("image_recipe", imageRecipe as File);
+    formData.append("password", password);
 
     axios
-      .post(`${import.meta.env.VITE_BASE_URL}/recipes`, recipe)
+      .post(`${import.meta.env.VITE_BASE_URL}/recipes`, formData)
       .then(() => {
         navigate("/");
         setIsLoading(false);

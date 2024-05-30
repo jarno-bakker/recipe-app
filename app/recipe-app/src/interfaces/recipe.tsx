@@ -3,7 +3,7 @@ export interface Recipe {
   title: string;
   ingredients: string;
   steps: string;
-  image_ingredients: string | ArrayBuffer | null;
-  image_recipe: string | ArrayBuffer | null;
+  image_ingredients: File | undefined;
+  image_recipe: File | undefined;
   password?: string;
 }
