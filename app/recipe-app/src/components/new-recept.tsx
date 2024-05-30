@@ -11,7 +11,6 @@ import {
 } from "@chakra-ui/react";
 import "./components.css";
 import { useState } from "react";
-import { Recipe } from "../interfaces/recipe";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
