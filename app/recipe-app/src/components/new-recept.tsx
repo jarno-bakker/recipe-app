@@ -46,8 +46,6 @@ function NewRecept() {
   const save = () => {
     setError("");
     setIsLoading(true);
-    console.log(import.meta.env.VITE_PASSWORD);
-
     if (password != import.meta.env.VITE_PASSWORD) {
       setError("Wachtwoord verkeerd!");
       setIsLoading(false);
