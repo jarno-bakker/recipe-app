@@ -106,14 +106,13 @@ router.delete("/:id", isAuthorized, async (req, res) => {
 async function getRecipe(req, res, next) {
   let recipe;
   try {
-    recipe = await Recipe.findById(req.params._id);
+    recipe = await Recipe.findById(req.params.id);
     if (recipe == null) {
       return res.status(404).json({ message: "Cannot find recipe" });
     }
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
-
   res.recipe = recipe;
   next();
 }

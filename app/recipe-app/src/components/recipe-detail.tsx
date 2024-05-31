@@ -28,6 +28,11 @@ function charactersAfterLastSlash(str: string) {
 }
 
 function getData(location: any) {
+  console.log(
+    `${import.meta.env.VITE_BASE_URL}/recipes/${charactersAfterLastSlash(
+      location.pathname
+    )}`
+  );
   if (location.state != null) {
     return location.state;
   } else {
@@ -39,6 +44,7 @@ function getData(location: any) {
       )
       .then((response) => {
         // handle success
+        console.log(response);
         return response.data;
       })
       .catch((error) => {
@@ -57,6 +63,7 @@ function RecipeDetail() {
 
   const location = useLocation();
   const { recipe } = getData(location);
+  console.log(recipe);
 
   const removeRecipe = (id: string) => {
     axios
